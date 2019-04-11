@@ -1,0 +1,39 @@
+<html>
+	<head>
+	<title>task2</title>
+	</head>
+	<body>
+	<script src="vec3.js"></script>
+	<form>
+		x0:
+		<input type="text" name="x0">
+		y0:
+		<input type="text" name="y0">
+		z0:
+		<input type="text" name="z0"><br>
+		x1:
+		<input type="text" name="x1">
+		y1:
+		<input type="text" name="y1">
+		z1:
+		<input type="text" name="z1"><br>
+		x2:
+		<input type="text" name="x2">
+		y2:
+		<input type="text" name="y2">
+		z2:
+		<input type="text" name="z2"><br>
+		<input type="button" onclick="Calculate()" value="Calculate"><br>
+	</form>
+	<script>
+	function Calculate(){
+			var v0 = new Vec3( x0, y0, z0 );
+			var v1 = new Vec3( x1, y1, z1 );
+			var v2 = new Vec3( x2, y2, z2 );
+			var s = AreaOfTriangle( v0, v1, v2 );
+			document.write( "AreaOfTriangle= ", s )
+}
+	</script>
+	</body>
+</html>
+	
