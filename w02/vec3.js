@@ -71,12 +71,3 @@ Vec3.prototype.mid = function()
 }
 }
 
-// AreaOfTriangle method
-Vec3.prototype.AreaOfTriangle = function( v0, v1, v2 )
-{
-	var a = math.sqrt(( v1.x - v2.x ) * ( v1.x - v2.x ) + ( v1.y - v2.y ) * ( v1.y - v2.y ) + ( v1.z - v2.z ) * ( v1.z - v2.z ))
-	var b = math.sqrt(( v0.x - v2.x ) * ( v0.x - v2.x ) + ( v0.y - v2.y ) * ( v0.y - v2.y ) + ( v0.z - v2.z ) * ( v0.z - v2.z ))
-	var c = math.sqrt(( v0.x - v1.x ) * ( v0.x - v1.x ) + ( v0.y - v1.y ) * ( v0.y - v1.y ) + ( v0.z - v1.z ) * ( v0.z - v2.z ))
-	var t = ( a + b + c ) / 2
-	return math.sqrt( t * ( t - a ) * ( t - b ) * ( t - c ))
-}
