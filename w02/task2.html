@@ -1,0 +1,65 @@
+<html>
+	<head>
+	<title>task2</title>
+	</head>
+	<body>
+	<script src="vec3.js"></script>
+	<form>
+		Calculate the area of triangle<br>
+		Please input the coordinates of the three vertex<br>
+		x0:
+		<input type="text" name="x0" id="x0">
+		y0:
+		<input type="text" name="y0" id="y0">
+		z0:
+		<input type="text" name="z0" id="z0"><br>
+		x1:
+		<input type="text" name="x1" id="x1">
+		y1:
+		<input type="text" name="y1" id="y1">
+		z1:
+		<input type="text" name="z1" id="z1"><br>
+		x2:
+		<input type="text" name="x2" id="x2">
+		y2:
+		<input type="text" name="y2" id="y2">
+		z2:
+		<input type="text" name="z2" id="z2"><br>
+		<input type="button" onclick="Calculate()" value="Calculate"><br>
+	</form>
+	<script>
+	function Calculate(){
+			var x0 = document.getElementById("x0").value;
+			var x1 = document.getElementById("x1").value;
+			var x2 = document.getElementById("x2").value;
+			var y0 = document.getElementById("y0").value;
+			var y1 = document.getElementById("y1").value;
+			var y2 = document.getElementById("y2").value;
+			var z0 = document.getElementById("z0").value;
+			var z1 = document.getElementById("z1").value;
+			var z2 = document.getElementById("z2").value;
+			var v0 = new Vec3( x0, y0, z0 );
+			var v1 = new Vec3( x1, y1, z1 );
+			var v2 = new Vec3( x2, y2, z2 );
+			var s = AreaOfTriangle( v0, v1, v2)
+			document.write( "AreaOfTriangle= ", s, )
+}
+	function AreaOfTriangle( v0, v1, v2) 
+{
+	var a = Math.sqrt(( v1.x - v2.x ) * ( v1.x - v2.x ) + ( v1.y - v2.y ) * ( v1.y - v2.y ) + ( v1.z - v2.z ) * ( v1.z - v2.z ))
+	var b = Math.sqrt(( v0.x - v2.x ) * ( v0.x - v2.x ) + ( v0.y - v2.y ) * ( v0.y - v2.y ) + ( v0.z - v2.z ) * ( v0.z - v2.z ))
+	var c = Math.sqrt(( v0.x - v1.x ) * ( v0.x - v1.x ) + ( v0.y - v1.y ) * ( v0.y - v1.y ) + ( v0.z - v1.z ) * ( v0.z - v1.z ))
+	var t = ( a + b + c ) / 2
+	if (( a + b ) > c && ( a + c ) > b && ( b + c ) > a )
+{
+	return Math.sqrt( t * ( t - a ) * ( t - b ) * ( t - c ))
+}
+	else
+{
+	return "not triangle"
+}
+}
+	</script>
+	</body>
+</html>
+	
