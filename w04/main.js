@@ -21,7 +21,7 @@ function main()
     document.body.appendChild( renderer.domElement );
 
     var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshPhongMaterial( { color: 0xff0040  } );
+    var material = new THREE.MeshLambertMaterial( { color: 0xff0040  } );
     var cube = new THREE.Mesh( geometry, material );
     scene.add( cube );
 
@@ -30,8 +30,8 @@ function main()
     function loop()
     {
         requestAnimationFrame( loop );
-        cube.rotation.x += 0.001;
-        cube.rotation.y += 0.001;
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.01;
         renderer.render( scene, camera );
     }
 }
