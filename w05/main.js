@@ -1,10 +1,10 @@
 function main()
 {
-    var width = 500;
     var height = 500;
-
+    var width = 500;
+    
     var scene = new THREE.Scene();
-
+    
     var fov = 45;
     var aspect = width / height;
     var near = 1;
@@ -15,23 +15,18 @@ function main()
     light.position.set( 1, 1, 1 );
     scene.add( light );
     scene.add( camera );
-
+    
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize( width, height );
     document.body.appendChild( renderer.domElement );
-
-    var geometry = new THREE.BoxGeometry( 1, 1, 1 );
-    var material = new THREE.MeshLambertMaterial( { color: 0xdba901  } );
-    var cube = new THREE.Mesh( geometry, material );
-    scene.add( cube );
-
-    loop();
-
-    function loop()
-    {
-        requestAnimationFrame( loop );
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
-        renderer.render( scene, camera );
-    }
+    //geometry cube
+    var vertices = [
+        [0, 0, 0],//v0
+        [1, 0, 0],//v1
+        [1, 1, 0],//v2
+        [1, 1, 1],//v3
+        [0, 1, 0],//v4
+        [0, 1, 1],//v5
+        [0, 0, 1],//v6
+    ]
 }
