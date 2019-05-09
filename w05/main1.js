@@ -1,3 +1,4 @@
+
 function main()
 {
     var height = 500;
@@ -19,17 +20,18 @@ function main()
     var renderer = new THREE.WebGLRenderer();
     renderer.setSize( width, height );
     document.body.appendChild( renderer.domElement );
+    
     //geometry cube
     var vertices = [
-        [0, 0, 0],//v0
-        [1, 0, 0],//v1
-        [1, 1, 0],//v2
-        [0, 1, 0],//v3
-        [0, 1, 1],//v4
-        [1, 1, 1],//v5
-        [1, 0, 1],//v6
-        [0, 0, 1] //v7
-    ]
+                    [0, 0, 0],//v0
+                    [1, 0, 0],//v1
+                    [1, 1, 0],//v2
+                    [0, 1, 0],//v3
+                    [0, 1, 1],//v4
+                    [1, 1, 1],//v5
+                    [1, 0, 1],//v6
+                    [0, 0, 1] //v7
+                    ]
     var faces = [
                  [0,3,1],//f0
                  [3,2,1],//f1
@@ -120,15 +122,43 @@ function main()
     var cube = new THREE.Mesh( geometry, material );
     scene.add( cube );
     
+    //click event
+    document.addEventListener( 'mousedown', mouse_down_event );
+    function mouse_down_event( event )
+    {
+        
+        var x_win = event.clientX;
+        var y_win = event.clientY;
+        var vx = renderer.domElement.offsetLeft;
+        var vy = renderer.domElement.offsetTop;
+        var vw = renderer.domElement.width;
+        var vh = renderer.domElement.height;
+        var x_NDC = 2 * ( x_win - vx ) / vw - 1;
+        var y_NDC = -( 2 * ( y_win - vy ) / vh - 1 );
+        var p_NDC = new THREE.Vector3( x_NDC, y_NDC, 1 );
+        var p_wld = p_NDC.unproject( camera );
+        var origin = camera.position;
+        var direction = p_wld.sub(camera.position).normalize();
+        console.log(origin, direction);
+        var raycaster = new THREE.Raycaster( origin, direction );
+        var intersects = raycaster.intersectObject( cube );
+        console.log(intersects);
+        if ( intersects.length > 0 )
+        {
+            intersects[0].face.color.setRGB( 0, 1, 0 );
+            intersects[0].object.geometry.colorsNeedUpdate = true;
+        }
+        
+    }
+    
     loop();
     
     function loop()
     {
         requestAnimationFrame( loop );
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        cube.rotation.x += 0.003;
+        cube.rotation.y += 0.003;
         renderer.render( scene, camera );
     }
-    
     
 }
