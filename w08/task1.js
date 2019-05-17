@@ -32,16 +32,21 @@ function main()
                  ];
     
     var scalars = [
-                   1,   // S0
-                   2, // S1
-                   8  // S2
+                   0.1,   // S0
+                   0.2, // S1
+                   0.8  // S2
                    ];
+    var min = 0.1;
+    var max = 0.8;
+    var a = 255/(max-min);
+    var b = -(min*a);
     
     // Create color map
     var cmap = [];
-    for ( var i = 1; i <= 9; i++ )
+    for ( var i = 0; i <= 255; i++ )
     {
-        var S = (i - 1.0) / 8.0; // [0,1]
+        var S = i / 255; // [0.1,0.8]
+        console.log(S);
         var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
         var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
         var B = Math.max( Math.cos( S * Math.PI ), 0.0 );
@@ -85,6 +90,10 @@ function main()
         var S0 = scalars[ id[0] ];
         var S1 = scalars[ id[1] ];
         var S2 = scalars[ id[2] ];
+        var S0 = Math.round(a*S0+b);
+        var S1 = Math.round(a*S1+b);
+        var S2 = Math.round(a*S2+b);
+        console.log(S0,S1,S2);
         var C0 = new THREE.Color().setHex( cmap[ S0 ][1] );
         var C1 = new THREE.Color().setHex( cmap[ S1 ][1] );
         var C2 = new THREE.Color().setHex( cmap[ S2 ][1] );
