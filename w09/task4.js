@@ -1,5 +1,8 @@
-function Isosurfaces( volume, point, normal, screen )
+function Isosurfaces( volume, screen )
 {
+    //constants
+    var point = new THREE.Vector3(50, 50, 16);
+    var normal = new THREE.Vector3(1, 0, 5);
     var d = - normal.x * point.x - normal.y * point.y - normal.z * point.z;
     var coef = new THREE.Vector4( normal.x, normal.y, normal.z, d );
     var geometry = new THREE.Geometry();
