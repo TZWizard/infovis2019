@@ -12,7 +12,7 @@ function main()
     var bounds = Bounds( volume );
     screen.scene.add( bounds );
     
-    var surfaces = Isosurfaces( volume, screen );
+    var surfaces = Sliceplane( volume);
     screen.scene.add( surfaces );
     
     document.addEventListener( 'mousemove', function() {
