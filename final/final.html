@@ -1,0 +1,238 @@
+<html>
+    <head>
+        <title>final</title>
+    </head>
+    <body style="margin:0">
+        <script src="three.min.js"></script>
+        <script src="TrackballControls.js"></script>
+        <script type="x-shader/x-vertex" id="phong.vert">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            void main()
+            {
+                point_color = color;
+                point_position = modelViewMatrix * vec4( position, 1.0 );
+                normal_vector = normalMatrix * normal;
+                gl_Position = projectionMatrix * point_position;
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="phong.frag">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+            // Blinn-PhongReflection function here
+            vec3 PhongReflection( vec3 C, vec3 L, vec3 N, vec3 V )
+            {
+                float ka = 0.3;
+                float kd = 0.5;
+                float ks = 0.8;
+                float n = 50.0;
+                vec3 H = normalize( L + V );
+                float dd = max( dot( N, L ), 0.0 );
+                float ds = pow( max( dot( H, N ), 0.0 ), n );
+                if ( dd <= 0.0 ) { ds = 0.0; }
+                float Ia = ka;
+                float Id = kd * dd;
+                float Is = ks * ds;
+                return C * ( Ia + Id + Is );
+            }
+        
+        void main()
+        {
+            vec3 C = point_color;
+            vec3 L = normalize( light_position - point_position.xyz );
+            vec3 N = normalize( normal_vector );
+            vec3 V = normalize( -point_position.xyz );
+            vec3 shaded_color = PhongReflection( C, L, N, V );
+            gl_FragColor = vec4( shaded_color, 1.0 );
+        }
+        </script>
+        <script type="x-shader/x-vertex" id="cook.vert">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            void main()
+            {
+                point_color = color;
+                point_position = modelViewMatrix * vec4( position, 1.0 );
+                normal_vector = normalMatrix * normal;
+                gl_Position = projectionMatrix * point_position;
+            }
+        </script>
+        <script type="x-shader/x-fragment" id="cook.frag">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+        
+        vec3 CookTorranceReflection( vec3 C, vec3 L, vec3 N, vec3 V )
+        {
+            float ka = 0.3;
+            float kd = 0.5;
+            float ks = 0.8;
+            float m = 0.2; // roughness. [0:smooth, 1:rough]
+            float F0 = 0.2;
+            
+            //         float dd = dot( N, L );
+            float dd = max( dot( N, L ), 0.0 );
+            float ds = 0.0;
+            if ( dd > 0.0 )
+            {
+                vec3 H = normalize( L + V );
+                float NL = dd;
+                float NH = dot( N, H );
+                float NV = dot( N, V );
+                float VH = dot( V, H );
+                
+                // Beckmann distribution
+                float NH2 = NH * NH;
+                float NH4 = NH2 * NH2;
+                float D = ( 1.0 / ( 4.0 * m * m * NH4 ) ) * exp( ( NH2 - 1.0 ) / ( m * m * NH2 ) );
+                
+                // Geometrical attenuation factor
+                float G = min( 1.0, min( 2.0 * NH * NV / VH, 2.0 * NH * NL / VH ) );
+                
+                // Fresnel term
+                float n = ( 1.0 + sqrt( F0 ) ) / ( 1.0 - sqrt( F0 ) );
+                float c = VH;
+                float g = sqrt( n * n + c * c - 1.0 );
+                float gc0 = g - c;
+                float gc1 = g + c;
+                float cgc0 = c * gc1 - 1.0;
+                float cgc1 = c * gc0 + 1.0;
+                float f0 = ( gc0 * gc0 ) / ( gc1 * gc1 );
+                float f1 = 1.0 + ( cgc0 / cgc1 ) * ( cgc0 / cgc1 );
+                float F = 0.5 * f0 * f1;
+                
+                // Specular component
+                ds = ( F / 3.14159265 ) * ( D * G / ( NL * NV ) );
+            }
+            
+            float Ia = ka;
+            float Id = kd * dd;
+            float Is = ks * ds;
+            return C * ( Ia + Id + Is );
+        }
+        void main()
+        {
+            vec3 C = point_color;
+            vec3 L = normalize( light_position - point_position.xyz );
+            vec3 N = normalize( normal_vector );
+            vec3 V = normalize( -point_position.xyz );
+            vec3 shaded_color = CookTorranceReflection( C, L, N, V );
+            gl_FragColor = vec4( shaded_color, 1.0 );
+        }
+        </script>
+        <script type="x-shader/x-vertex" id="toon.vert">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            void main()
+            {
+                point_color = color;
+                point_position = modelViewMatrix * vec4( position, 1.0 );
+                normal_vector = normalMatrix * normal;
+                gl_Position = projectionMatrix * point_position;
+            }
+        </script>
+        
+        <script type="x-shader/x-fragment" id="toon.frag">
+            varying vec3 point_color;
+            varying vec4 point_position;
+            varying vec3 normal_vector;
+            uniform vec3 light_position;
+            uniform vec3 camera_position;
+            
+            vec3 ToonReflection( vec3 C, vec3 L, vec3 N, vec3 V ){
+                float ka = 0.4;
+                float kd = 0.6;
+                float ks = 0.8;
+                float n = 50.0;
+                vec3 R = reflect( -L, N );
+                float dd = max( dot( N, L ), 0.0 );
+                float ds = pow( max( dot( R, V ), 0.0 ), n );
+                if ( dd <= 0.0 ) { ds = 0.0; }
+                float Ia = ka;
+                float Id = kd * dd;
+                float Is = ks * ds;
+                float intensity = normalize(dot(L, N));
+                float intensity_cp = intensity;
+                if(intensity > 0.9)intensity_cp = 1.0;
+                else if(intensity > 0.5)intensity_cp = 0.75;
+                else if(intensity > 0.25)intensity_cp = 0.5;
+                else intensity_cp = 0.25;
+                //return C * ( Ia + Id + Is ) * intensity_cp;
+                return C * ( Ia + Id ) * intensity_cp;
+            }
+        
+        void main(){
+            vec3 C = point_color;
+            vec3 L = normalize( light_position - point_position.xyz );
+            vec3 N = normalize( normal_vector );
+            vec3 V = normalize( camera_position - point_position.xyz );
+            
+            vec3 shaded_color = ToonReflection( C, L, N, V );
+            
+            gl_FragColor = vec4( shaded_color, 1.0 );
+        }
+        </script>
+        <script src="https://threejs.org/examples/js/math/Lut.js"></script>
+        <script src="https://naohisas.github.io/KVS.js/Build/KVS.min.js"></script>
+        <script src="https://naohisas.github.io/KVS.js/Build/KVS2THREE.min.js"></script>
+        <script src="https://naohisas.github.io/KVS.js/Source/KVSLobsterData.js"></script>
+        <script src="Bounds.js"></script>
+        <script src="slice_plane.js"></script>
+        <script src="slice_plane_main.js"></script>
+        <script src="isosurface.js"></script>
+        <script src="isosurface_main.js"></script>
+        <script src="rendering.js"></script>
+        <script src="rendering_main.js"></script>
+        <h1>Final Task</h1>
+        <h2>190xe04x  李徳然</h2>
+        <h2>0.Introduction</h2>
+        There are several method of visualization would be introduced in this report.Most of them are able to apply the user interface.The basic volume date is KVSLobsterData(<a href="https://naohisas.github.io/KVS.js/Source/KVSLobsterData.js">"https://naohisas.github.io/KVS.js/Source/KVSLobsterData.js"</a>)
+        <h2>1.Isosurface</h2>
+        There is a slider below the program,you can change the isovalue(from 0 to 254) by clicking the"apply".If you set the isovalue to a low level,some noise could be observed.This isosurface is implented a method of caculating interpolation,so it's looked smoother.
+        </div>
+        <div id="display1" ></div>
+        <div id="controller">
+            <label id="label" style="font-family:Arial;" >isovalue</label>
+            <input type="range" min="0" max="254" step="1" value="128"
+            id="isovalue" oninput="isoOutputId.value = isovalue.value">
+            <output id="isoOutputId">128</output>
+            <button id="apply1" style="font-family=Arial;">
+                Apply</button>
+        </div>
+        <h2>2.Sliceplane</h2>
+        You can change the plane sliced by input a point and the normal of that plane.The point must on the plane
+        <div id="display2"></div>
+        <div id="coordinate">
+            Point: X:<input type="number" id="c_x" value="50">Y:<input type="number" id="c_y" value="50">
+            Z:<input type="number" id="c_z" value="16"><br>
+                Normal: X:<input type="number" id="n_x" value="1">Y:<input type="number" id="n_y" value="0">
+                    Z:<input type="number" id="n_z" value="5"><br>
+                <button id="apply2" style="font-family=Arial;">
+                            Apply</button>
+                </div>
+        <h2>3.Shading</h2>
+        Here is three different reflection implented in the program.They are all used phong shading.
+        <div id="display3"></div>
+        <div>
+            <input type="radio" name="reflection" value="1" checked="checked" >Blinn-Phong Reflection<br>
+            <input type="radio" name="reflection" value="2" >CookTorrance Reflection<br>
+            <input type="radio" name="reflection" valeu="3" >Toon Reflection<br>
+                <button id="apply3" style="font-family=Arial;">
+                    Apply</button>
+                </div>
+        </div>
+        <script>
+            main_isosurface();
+            main_sliceplane();
+            main_rendering();
+            </script>
+    </body>
+</html>
+
+
