@@ -14,14 +14,14 @@ function main_isosurface()
     var bounds = Bounds( volume );
     screen.scene.add( bounds );
 
-    var isovalue = 128;
+    var isovalue = 128;//default isovalue
     var surfaces = Isosurfaces( volume, isovalue );
     screen.scene.add( surfaces );
     document.getElementById('apply1').addEventListener('click',function(){
     screen.scene.remove(surfaces);
-        var isovalue = document.getElementById('isovalue').value;
-        surfaces = Isosurfaces( volume, isovalue);
-        screen.scene.add( surfaces );
+    var isovalue = document.getElementById('isovalue').value;
+    surfaces = Isosurfaces( volume, isovalue);
+    screen.scene.add( surfaces );
                                                        });
     document.addEventListener( 'mousemove', function() {
         screen.light.position.copy( screen.camera.position );
